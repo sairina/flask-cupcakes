@@ -37,7 +37,7 @@ class CupcakeViewsTestCase(TestCase):
 
         Cupcake.query.delete()
 
-        cupcake = Cupcake(**CUPCAKE_DATA)
+        cupcake = Cupcake(**CUPCAKE_DATA) # create with all the cupcake data in the first CUPCAKE_DATA
         db.session.add(cupcake)
         db.session.commit()
 

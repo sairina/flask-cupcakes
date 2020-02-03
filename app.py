@@ -34,3 +34,34 @@ def get_cupcakes_data():
     cupcakes = Cupcake.query.all()
     serialized = [serialize_cupcake(cupcake) for cupcake in cupcakes]
     return jsonify(cupcakes=serialized)
+
+
+@app.route("/api/cupcakes/<int:cupcake_id>")
+def get_cupcake_details(cupcake_id):
+    """ Get data about a single cupcake.
+    Respond with JSON like: {cupcake: {id, flavor, size, rating, image}}.
+    This should raise a 404 if the cupcake cannot be found. """
+
+    cupcake = Cupcake.query.get_or_404(cupcake_id)
+    serialized = serialize_cupcake(cupcake)
+    return jsonify(cupcake=serialized)
+
+
+@app.route("/api/cupcakes", methods=["POST"])
+def create_cupcake_details():
+    """ Create a cupcake with flavor, size, rating and image data from the body of the request.
+        Respond with JSON like: {cupcake: {id, flavor, size, rating, image}}. """
+
+    flavor = request.json['flavor']
+    size = request.json['size']
+    rating = request.json['rating']
+    image = request.json['image']
+
+    new_cupcake = Cupcake(flavor=flavor, size=size, rating=rating, image=image)
+
+    db.session.add(new_cupcake)
+    db.session.commit()
+
+    serialized = serialize_cupcake(new_cupcake)
+
+    return (jsonify(cupcake=serialized), 201)
