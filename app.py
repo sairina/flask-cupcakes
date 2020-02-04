@@ -1,5 +1,5 @@
 """Flask app for Cupcakes"""
-from flask import Flask, redirect, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify
 from models import db, connect_db, Cupcake
 
 app = Flask(__name__)
@@ -11,6 +11,13 @@ connect_db(app)
 db.create_all()
 
 app.config['SECRET_KEY'] = "poiawhefiusiuawe"
+
+
+@app.route("/", methods=['GET', 'POST'])
+def index():
+    """ Homepage"""
+
+    return render_template("index.html", cupcakes=Cupcake.query.all())
 
 
 @app.route("/api/cupcakes")
@@ -41,16 +48,18 @@ def create_cupcake_details():
         body of the request.
         Respond with JSON like: {cupcake: {id, flavor, size, rating, image}}. """
 
+    # import pdb; pdb.set_trace()
+
     flavor = request.json['flavor']
     size = request.json['size']
     rating = request.json['rating']
     image = request.json['image']
 
     new_cupcake = Cupcake(flavor=flavor, size=size, rating=rating, image=image)
-
+    print("************************************************************")
     db.session.add(new_cupcake)
     db.session.commit()
-
+    
     serialized = new_cupcake.serialize_cupcake()
 
     return (jsonify(cupcake=serialized), 201)
